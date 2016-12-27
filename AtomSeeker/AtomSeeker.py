@@ -15,8 +15,12 @@ def main():
     # input file or stdin
     with open(args[0], 'rb') if len(args) > 0 else sys.stdin as i_f:
 
-        Atom.Atom(i_f)
+        while True:
 
+            try:
+                Atom.Atom(i_f)
+            except EOFError:
+                break
 
 if __name__ == '__main__':
 
