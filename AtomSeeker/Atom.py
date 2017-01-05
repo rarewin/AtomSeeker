@@ -5,6 +5,8 @@ import struct
 import sys
 import os
 
+ATOMS_WITH_ONLY_CHILDREN = ['trak', 'edts', 'mdia', 'minf', 'stbl']
+
 def read_num(stream, num = 4):
     "return a number by 'num'-byte from 'stream'"
 
@@ -59,6 +61,10 @@ def parse_atom(stream):
     try:
         return eval("%s(stream, _size, _type)" % (_type))
     except NameError:
+
+        if _type in ATOMS_WITH_ONLY_CHILDREN:
+            return atom_with_only_children(stream, _size, _type)
+
         a = Atom(stream, _size, _type)
         stream.seek(_size - 8, os.SEEK_CUR)
         return a
@@ -160,15 +166,6 @@ class mvhd(Atom):
         setattr(self, 'Current_time', read_num(stream))
         setattr(self, 'Next_track_ID', read_num(stream))
 
-class trak(Atom):
-    "trak-atom class"
-
-    def __init__(self, stream, size, type):
-
-        super().__init__(stream, size, type)
-
-        self.parse_children(stream)
-
 class tkhd(Atom):
     "tkhd-atom class"
 
@@ -194,8 +191,23 @@ class tkhd(Atom):
         setattr(self, 'Track_width', read_num(stream))
         setattr(self, 'Track_height', read_num(stream))
 
-class edts(Atom):
-    "edts-atom class"
+class mdhd(Atom):
+    "mdhd-atom class"
+
+    def __init__(self, stream, size, type):
+
+        self.with_version = True
+
+        super().__init__(stream, size, type)
+
+        setattr(self, 'Creation_time', read_num(stream))
+        setattr(self, 'Modification_time', read_num(stream))
+        setattr(self, 'Time_scale', read_num(stream))
+        setattr(self, 'Duration', read_num(stream))
+        setattr(self, 'Language', read_str(stream, 2))
+        setattr(self, 'Quality', read_str(stream, 2))
+
+class atom_with_only_children(Atom,):
 
     def __init__(self, stream, size, type):
 
