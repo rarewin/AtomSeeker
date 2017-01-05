@@ -15,8 +15,7 @@ def main():
     # input file or stdin
     with open(args[0], 'rb') if len(args) > 0 else sys.stdin as i_f:
 
-        Atom.parse_atom(i_f)
-        Atom.parse_atom(i_f)
+        Atom.print_atoms(Atom.parse_atoms(i_f))
 
 if __name__ == '__main__':
 
