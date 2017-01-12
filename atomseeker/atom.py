@@ -3,6 +3,7 @@
 import struct
 import sys
 import os
+from collections import OrderedDict
 
 ATOMS_WITH_ONLY_CHILDREN = ['trak', 'edts', 'mdia', 'minf', 'stbl']
 
@@ -75,8 +76,9 @@ def print_atoms(atoms, level = 0):
 
         print("%s%s: %08x %08x" % (" " * level, a.type, a.size, a.tell))
 
-        if hasattr(a, 'children'):
-            print_atoms(a.children, level + 1)
+        # print if 'a' has children
+        if 'children' in a.elements:
+            print_atoms(a.elements['children'], level + 1)
 
 
 class Atom:
@@ -93,9 +95,11 @@ class Atom:
         except AttributeError:
             self.with_version = False
 
-        if (self.with_version):
+        if self.with_version:
             self.version = read_num(stream, 1)
             self.flags   = read_num(stream, 3)
+
+        self.elements = OrderedDict()
 
     def parse_children(self, stream):
 
@@ -107,7 +111,7 @@ class Atom:
             child = parse_atom(stream)
             _children.append(child)
 
-        setattr(self, 'children', _children)
+        self.elements['children'] = _children
 
 class ftyp(Atom):
     "ftyp-atom class"
@@ -116,15 +120,15 @@ class ftyp(Atom):
 
         super().__init__(stream, size, type)
 
-        setattr(self, 'Major_Brand', read_str(stream, 4))
-        setattr(self, 'Minor_Version', read_num(stream, 4))
+        self.elements['Major_Brand']   = read_str(stream, 4)
+        self.elements['Minor_Version'] = read_num(stream, 4)
 
         tmp = []
 
         for i in range((self.size - 16) // 4):
             tmp.append(read_str(stream, 4))
 
-        setattr(self, 'Compatible_Brands', tmp)
+        self.elements['Compatible_Brands'] = tmp
 
 class moov(Atom):
     "moov-atom class"
@@ -134,7 +138,7 @@ class moov(Atom):
         super().__init__(stream, size, type)
 
         if self.size == 1:
-            setattr(self, 'ExtendedSize', read_num(stream, 8))
+            self.elements['ExtendedSize'] = read_num(stream, 8)
 
         self.parse_children(stream)
 
@@ -147,23 +151,23 @@ class mvhd(Atom):
 
         super().__init__(stream, size, type)
 
-        setattr(self, 'Creation_time', read_num(stream))
-        setattr(self, 'Modification_time', read_num(stream))
-        setattr(self, 'Time_scale', read_num(stream))
-        setattr(self, 'Duration', read_num(stream))
-        setattr(self, 'Preferred_rate', read_num(stream))
-        setattr(self, 'Preferred_volume', read_num(stream, 2))
-        setattr(self, 'Reserved', read_num(stream, 10))
+        self.elements['Creation_time'] = read_num(stream)
+        self.elements['Modification_time'] = read_num(stream)
+        self.elements['Time_scale'] = read_num(stream)
+        self.elements['Duration'] = read_num(stream)
+        self.elements['Preferred_rate'] = read_num(stream)
+        self.elements['Preferred_volume'] = read_num(stream,2)
+        self.elements['Reserved'] = read_num(stream, 10)
 
-        setattr(self, 'Matrix_structure', [read_num(stream) for x in range(9)])
+        self.elements['Matrix_structure'] = [read_num(stream) for x in range(9)]
 
-        setattr(self, 'Preview_time', read_num(stream))
-        setattr(self, 'Preview_duration', read_num(stream))
-        setattr(self, 'Poster_time', read_num(stream))
-        setattr(self, 'Selection_time', read_num(stream))
-        setattr(self, 'Selection_duration', read_num(stream))
-        setattr(self, 'Current_time', read_num(stream))
-        setattr(self, 'Next_track_ID', read_num(stream))
+        self.elements['Preview_time'] = read_num(stream)
+        self.elements['Preview_duration'] = read_num(stream)
+        self.elements['Poster_time'] = read_num(stream)
+        self.elements['Selection_time'] = read_num(stream)
+        self.elements['Selection_duration'] = read_num(stream)
+        self.elements['Current_time'] = read_num(stream)
+        self.elements['Next_track_ID'] = read_num(stream)
 
 class tkhd(Atom):
     "tkhd-atom class"
@@ -174,21 +178,21 @@ class tkhd(Atom):
 
         super().__init__(stream, size, type)
 
-        setattr(self, 'Creation_time', read_num(stream))
-        setattr(self, 'Modification_time', read_num(stream))
-        setattr(self, 'Track_ID', read_num(stream))
-        setattr(self, 'Reserved', read_num(stream))
-        setattr(self, 'Duration', read_num(stream))
-        setattr(self, 'Reserved2', read_num(stream, 8))
-        setattr(self, 'Layer', read_num(stream, 2))
-        setattr(self, 'Alternate_group', read_num(stream, 2))
-        setattr(self, 'Volume', read_num(stream, 2))
-        setattr(self, 'Reserved3', read_num(stream, 2))
+        self.elements['Creation_time'] = read_num(stream)
+        self.elements['Modification_time'] = read_num(stream)
+        self.elements['Track_ID'] = read_num(stream)
+        self.elements['Reserved'] = read_num(stream)
+        self.elements['Duration'] = read_num(stream)
+        self.elements['Reserved2'] = read_num(stream, 8)
+        self.elements['Layer'] = read_num(stream, 2)
+        self.elements['Alternate_group'] = read_num(stream, 2)
+        self.elements['Volume'] = read_num(stream, 2)
+        self.elements['Reserved3'] = read_num(stream, 2)
 
-        setattr(self, 'Matrix_structure', [read_num(stream) for x in range(9)])
+        self.elements['Matrix_structure'] = [read_num(stream) for x in range(9)]
 
-        setattr(self, 'Track_width', read_num(stream))
-        setattr(self, 'Track_height', read_num(stream))
+        self.elements['Track_width'] = read_num(stream)
+        self.elements['Track_height'] = read_num(stream)
 
 class mdhd(Atom):
     "mdhd-atom class"
@@ -199,12 +203,12 @@ class mdhd(Atom):
 
         super().__init__(stream, size, type)
 
-        setattr(self, 'Creation_time', read_num(stream))
-        setattr(self, 'Modification_time', read_num(stream))
-        setattr(self, 'Time_scale', read_num(stream))
-        setattr(self, 'Duration', read_num(stream))
-        setattr(self, 'Language', read_str(stream, 2))
-        setattr(self, 'Quality', read_str(stream, 2))
+        self.elements['Creation_time'] = read_num(stream)
+        self.elements['Modification_time'] = read_num(stream)
+        self.elements['Time_scale'] = read_num(stream)
+        self.elements['Duration'] = read_num(stream)
+        self.elements['Language'] = read_str(stream, 2)
+        self.elements['Quality'] = read_str(stream, 2)
 
 class atom_with_only_children(Atom,):
 
