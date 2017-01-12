@@ -76,9 +76,12 @@ def print_atoms(atoms, level = 0):
 
         print("%s%s: %08x %08x" % (" " * level, a.type, a.size, a.tell))
 
-        # print if 'a' has children
-        if 'children' in a.elements:
-            print_atoms(a.elements['children'], level + 1)
+        for k, v in a.elements.items():
+            print(" %s| '%s' = %s" % (" " * level, k, v))
+
+        # print if 'a' has the attribute 'children'
+        if hasattr(a, 'children'):
+            print_atoms(a.children, level + 1)
 
 
 class Atom:
@@ -111,7 +114,7 @@ class Atom:
             child = parse_atom(stream)
             _children.append(child)
 
-        self.elements['children'] = _children
+        self.children = _children
 
 class ftyp(Atom):
     "ftyp-atom class"
@@ -158,9 +161,7 @@ class mvhd(Atom):
         self.elements['Preferred_rate'] = read_num(stream)
         self.elements['Preferred_volume'] = read_num(stream,2)
         self.elements['Reserved'] = read_num(stream, 10)
-
         self.elements['Matrix_structure'] = [read_num(stream) for x in range(9)]
-
         self.elements['Preview_time'] = read_num(stream)
         self.elements['Preview_duration'] = read_num(stream)
         self.elements['Poster_time'] = read_num(stream)
@@ -188,9 +189,7 @@ class tkhd(Atom):
         self.elements['Alternate_group'] = read_num(stream, 2)
         self.elements['Volume'] = read_num(stream, 2)
         self.elements['Reserved3'] = read_num(stream, 2)
-
-        self.elements['Matrix_structure'] = [read_num(stream) for x in range(9)]
-
+        self.elements['Matrix_structure'] = [[read_num(stream) for y in range(3)] for x in range(3)]
         self.elements['Track_width'] = read_num(stream)
         self.elements['Track_height'] = read_num(stream)
 
@@ -209,6 +208,17 @@ class mdhd(Atom):
         self.elements['Duration'] = read_num(stream)
         self.elements['Language'] = read_str(stream, 2)
         self.elements['Quality'] = read_str(stream, 2)
+
+class elst(Atom):
+    "elst-atom class"
+
+    def __init__(self, stream, size, type):
+
+        self.with_version = True
+        super().__init__(stream, size, type)
+
+        self.elements['Number_of_entries'] = read_num(stream)
+        self.elements['Edit_list_table'] = [[read_num(stream) for y in range(3)] for x in range(self.elements['Number_of_entries'])]
 
 class atom_with_only_children(Atom,):
 
