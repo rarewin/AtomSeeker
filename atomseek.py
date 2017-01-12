@@ -4,7 +4,7 @@
 from optparse import OptionParser
 import sys
 
-import Atom
+import atomseeker
 
 def main():
 
@@ -15,7 +15,7 @@ def main():
     # input file or stdin
     with open(args[0], 'rb') if len(args) > 0 else sys.stdin as i_f:
 
-        Atom.print_atoms(Atom.parse_atoms(i_f))
+        atomseeker.atom.print_atoms(atomseeker.atom.parse_atoms(i_f))
 
 if __name__ == '__main__':
 

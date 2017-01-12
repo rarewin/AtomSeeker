@@ -8,4 +8,11 @@ setup(
     author = 'Katsuki Kobayashi',
     author_email = 'rare@tirasweel.org',
     license = 'BSD 2-Clause License',
+    entry_points = """
+        [console_scripts]
+        AtomSeeker = AtomSeeker:main
+    """,
+    author = 'Katsuki Kobayashi',
+    author_email = 'rare@tirasweel.org',
+    license = 'BSD 2-Clause License',
 )
