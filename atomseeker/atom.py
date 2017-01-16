@@ -5,6 +5,8 @@ import sys
 import os
 from collections import OrderedDict
 
+from atomseeker import elements
+
 ATOMS_WITH_ONLY_CHILDREN = ['trak', 'edts', 'mdia', 'minf', 'stbl']
 
 def read_num(stream, num = 4):
@@ -154,20 +156,20 @@ class mvhd(Atom):
 
         super().__init__(stream, size, type)
 
-        self.elements['Creation_time'] = read_num(stream)
-        self.elements['Modification_time'] = read_num(stream)
+        self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
+        self.elements['Modification_time'] = elements.AtomDate(read_num(stream))
         self.elements['Time_scale'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
         self.elements['Preferred_rate'] = read_num(stream)
         self.elements['Preferred_volume'] = read_num(stream,2)
         self.elements['Reserved'] = read_num(stream, 10)
         self.elements['Matrix_structure'] = [read_num(stream) for x in range(9)]
-        self.elements['Preview_time'] = read_num(stream)
+        self.elements['Preview_time'] = elements.AtomDate(read_num(stream))
         self.elements['Preview_duration'] = read_num(stream)
-        self.elements['Poster_time'] = read_num(stream)
-        self.elements['Selection_time'] = read_num(stream)
+        self.elements['Poster_time'] = elements.AtomDate(read_num(stream))
+        self.elements['Selection_time'] = elements.AtomDate(read_num(stream))
         self.elements['Selection_duration'] = read_num(stream)
-        self.elements['Current_time'] = read_num(stream)
+        self.elements['Current_time'] = elements.AtomDate(read_num(stream))
         self.elements['Next_track_ID'] = read_num(stream)
 
 class tkhd(Atom):
@@ -179,8 +181,8 @@ class tkhd(Atom):
 
         super().__init__(stream, size, type)
 
-        self.elements['Creation_time'] = read_num(stream)
-        self.elements['Modification_time'] = read_num(stream)
+        self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
+        self.elements['Modification_time'] = elements.AtomDate(read_num(stream))
         self.elements['Track_ID'] = read_num(stream)
         self.elements['Reserved'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
@@ -202,8 +204,8 @@ class mdhd(Atom):
 
         super().__init__(stream, size, type)
 
-        self.elements['Creation_time'] = read_num(stream)
-        self.elements['Modification_time'] = read_num(stream)
+        self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
+        self.elements['Modification_time'] = elements.AtomDate(read_num(stream))
         self.elements['Time_scale'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
         self.elements['Language'] = read_str(stream, 2)
