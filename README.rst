@@ -10,7 +10,21 @@ You can find a specification of QuickTime File Format(QTFF) at <https://develope
 Usage
 -----
 
-Under construction...
+First, my aim is to generate html page from movie files.
+At the moment the following command will output a small amount of information of [input_file] as text.
+
+```
+% ./atomseek.py [input_file]
+```
+
+
+
+TODO
+----
+
+* command line options
+* implement html generator (I plan to use jinja2)
+* make display more friendly
 
 
 License
