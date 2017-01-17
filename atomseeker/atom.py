@@ -163,7 +163,7 @@ class mvhd(Atom):
         self.elements['Preferred_rate'] = read_num(stream)
         self.elements['Preferred_volume'] = read_num(stream,2)
         self.elements['Reserved'] = read_num(stream, 10)
-        self.elements['Matrix_structure'] = [read_num(stream) for x in range(9)]
+        self.elements['Matrix_structure'] = elements.AtomMatrix([read_num(stream) for i in range(9)])
         self.elements['Preview_time'] = elements.AtomDate(read_num(stream))
         self.elements['Preview_duration'] = read_num(stream)
         self.elements['Poster_time'] = elements.AtomDate(read_num(stream))
@@ -191,7 +191,7 @@ class tkhd(Atom):
         self.elements['Alternate_group'] = read_num(stream, 2)
         self.elements['Volume'] = read_num(stream, 2)
         self.elements['Reserved3'] = read_num(stream, 2)
-        self.elements['Matrix_structure'] = [[read_num(stream) for y in range(3)] for x in range(3)]
+        self.elements['Matrix_structure'] = elements.AtomMatrix([read_num(stream) for i in range(9)])
         self.elements['Track_width'] = read_num(stream)
         self.elements['Track_height'] = read_num(stream)
 
