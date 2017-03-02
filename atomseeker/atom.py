@@ -85,7 +85,6 @@ def print_atoms(atoms, level = 0):
         if hasattr(a, 'children'):
             print_atoms(a.children, level + 1)
 
-
 class Atom:
     "basic atom class"
 
