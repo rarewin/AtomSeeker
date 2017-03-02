@@ -4,22 +4,56 @@
   <head>
     <meta charset="utf-8">
     <title>Result of Atomserker</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>  </head>
+    <style>
+     ul {
+       margin: 0pt;
+       padding: 0pt;
+     }
+
+     dl {
+       margin: 0pt;
+       margin-left: 10pt;
+       padding-left: 10pt;
+       margin-top: 5pt;
+       margin-bottom: 5pt;
+     }
+
+     li {
+       border: 1px solid gray;
+       margin: 0pt;
+       margin-left: 10pt;
+       padding-left: 10pt;
+       margin-top: 5pt;
+       margin-bottom: 5pt;
+       list-style-type: none;
+     }
+
+     span.atom_name {
+       font-size: 130%;
+       font-weight: bold;
+       text-decoration: underline;
+     }
+
+     span.warning {
+       color: red;
+       text-decoration: underline;
+     }
+
+     dt {
+       text-decoration: underline;
+     }
+
+     img {
+       border: 0px;
+     }
+    </style>
+  </head>
   <body>
-
     <div class="container" >
-
       <ul class="list-group">
-
         {% for a in result %}
           {% include "atom.tpl.html" %}
         {% endfor %}
-
       </ul>
-
   </body>
-
 </html>

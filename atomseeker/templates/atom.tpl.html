@@ -1,5 +1,5 @@
-<li class="list-group-item">
-  {{ a.type }}
+<li>
+  <span class="atom_name">{{ a.type }} ({{ "0x%08x" % (a.tell) }}, {{ "0x%08x" % (a.size) }})</span>
 
   {% if a.elements %}
     <dl>
@@ -11,18 +11,12 @@
   {% endif %}
 
   {% if a.children %}
-
     <ul>
-
       {% for c in a.children %}
-
         {% with a = c, template = "atom.tpl.html" %}
           {% include template %}
         {% endwith %}
-
       {% endfor %}
-
     </ul>
-
   {% endif %}
 </li>
