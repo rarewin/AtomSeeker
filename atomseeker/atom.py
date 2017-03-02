@@ -85,15 +85,6 @@ def print_atoms(atoms, level = 0):
         if hasattr(a, 'children'):
             print_atoms(a.children, level + 1)
 
-#def items_atoms(atoms, level = 0):
-#    "generate items of atoms"
-#
-#
-#
-#    for a in atoms:
-
-
-
 class Atom:
     "basic atom class"
 
