@@ -1,0 +1,28 @@
+<li class="list-group-item">
+  {{ a.type }}
+
+  {% if a.elements %}
+    <dl>
+      {% for k, v in a.elements.items() %}
+        <dt>{{ k }}</dt>
+        <dd>{{ v }}</dd>
+      {% endfor %}
+    </dl>
+  {% endif %}
+
+  {% if a.children %}
+
+    <ul>
+
+      {% for c in a.children %}
+
+        {% with a = c, template = "atom.tpl.html" %}
+          {% include template %}
+        {% endwith %}
+
+      {% endfor %}
+
+    </ul>
+
+  {% endif %}
+</li>
