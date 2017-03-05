@@ -1,6 +1,15 @@
 <li>
   <span class="atom_name">{{ a.type }} ({{ "0x%08x" % (a.tell) }}, {{ "0x%08x" % (a.size) }})</span>
 
+  {% if a.with_version %}
+    <dl>
+      <dt>Version</dt>
+      <dd>{{ a.version }}</dd>
+      <dt>Flags</dt>
+      <dd>{{ a.flags }}</dd>
+    </dl>
+  {% endif %}
+
   {% if a.elements %}
     <dl>
       {% for k, v in a.elements.items() %}

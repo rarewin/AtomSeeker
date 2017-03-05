@@ -1,40 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import struct
 import sys
 import os
 from collections import OrderedDict
 
 from atomseeker import elements
+from atomseeker.func import *
 
-ATOMS_WITH_ONLY_CHILDREN = ['trak', 'edts', 'mdia', 'minf', 'stbl']
-
-def read_num(stream, num = 4):
-    "return a number by 'num'-byte from 'stream'"
-
-    data = stream.read(num)
-
-    ret = 0
-    for i in struct.unpack("B" * len(data), data)[0:num]:
-        ret <<= 8
-        ret += i
-
-    return ret
-
-
-def read_str(stream, num = 4):
-    "return a string by 'num'-byte from 'stream'"
-
-    data = read_num(stream, num)
-
-    ret = ''
-
-    for i in range(num):
-        ret = ("%c" % (data & 0xff)) + ret
-        data >>= 8
-
-    return ret
-
+ATOMS_WITH_ONLY_CHILDREN = ['trak', 'edts', 'mdia', 'minf', 'stbl', 'dinf']
 
 def parse_atoms(stream):
     "return Atom(s) from 'stream' until stream finish"
@@ -50,7 +23,7 @@ def parse_atoms(stream):
 
     return ret
 
-def parse_atom(stream):
+def parse_atom(stream, parent = None):
     "return Atom from 'stream'"
 
     t = stream.tell()
@@ -58,16 +31,14 @@ def parse_atom(stream):
     _size = read_num(stream)
     _type = read_str(stream)
 
-    #print("%s: %08x" % (_type, t))
-
     try:
-        return eval("%s(stream, _size, _type)" % (_type))
+        return eval("%s(stream, _size, _type, parent)" % (_type))
     except NameError:
 
         if _type in ATOMS_WITH_ONLY_CHILDREN:
-            return atom_with_only_children(stream, _size, _type)
+            return atom_with_only_children(stream, _size, _type, parent)
 
-        a = Atom(stream, _size, _type)
+        a = Atom(stream, _size, _type, parent)
         stream.seek(_size - 8, os.SEEK_CUR)
         return a
 
@@ -77,6 +48,10 @@ def print_atoms(atoms, level = 0):
     for a in atoms:
 
         print("%s%s: %08x %08x" % (" " * level, a.type, a.size, a.tell))
+
+        if hasattr(a, 'version'):
+            print(" %s| '%s' = %s" % (" " * level, 'Version', a.version))
+            print(" %s| '%s' = %s" % (" " * level, 'Flags', a.flags))
 
         for k, v in a.elements.items():
             print(" %s| '%s' = %s" % (" " * level, k, v))
@@ -88,11 +63,12 @@ def print_atoms(atoms, level = 0):
 class Atom:
     "basic atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
         self.size = size
         self.type = type
         self.tell = stream.tell() - 8
+        self.parent = parent
 
         try:
             self.with_version
@@ -112,7 +88,7 @@ class Atom:
         _children = []
 
         while stream.tell() < cur_pos + self.size:
-            child = parse_atom(stream)
+            child = parse_atom(stream, self)
             _children.append(child)
 
         self.children = _children
@@ -120,9 +96,9 @@ class Atom:
 class ftyp(Atom):
     "ftyp-atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
 
         self.elements['Major_Brand']   = read_str(stream, 4)
         self.elements['Minor_Version'] = read_num(stream, 4)
@@ -137,9 +113,9 @@ class ftyp(Atom):
 class moov(Atom):
     "moov-atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
 
         if self.size == 1:
             self.elements['ExtendedSize'] = read_num(stream, 8)
@@ -149,11 +125,11 @@ class moov(Atom):
 class mvhd(Atom):
     "mvhd-atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
         self.with_version = True
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
 
         self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
         self.elements['Modification_time'] = elements.AtomDate(read_num(stream))
@@ -174,11 +150,11 @@ class mvhd(Atom):
 class tkhd(Atom):
     "tkhd-atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
         self.with_version = True
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
 
         self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
         self.elements['Modification_time'] = elements.AtomDate(read_num(stream))
@@ -197,11 +173,11 @@ class tkhd(Atom):
 class mdhd(Atom):
     "mdhd-atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
         self.with_version = True
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
 
         self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
         self.elements['Modification_time'] = elements.AtomDate(read_num(stream))
@@ -213,17 +189,91 @@ class mdhd(Atom):
 class elst(Atom):
     "elst-atom class"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
         self.with_version = True
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
 
         self.elements['Number_of_entries'] = read_num(stream)
         self.elements['Edit_list_table'] = [[read_num(stream) for y in range(3)] for x in range(self.elements['Number_of_entries'])]
 
+class dref(Atom):
+    "dref-atom class"
+
+    def __init__(self, stream, size, type, parent):
+
+        self.with_version = True
+        super().__init__(stream, size, type, parent)
+
+        self.elements['Number_of_entries'] = read_num(stream)
+        self.parse_children(stream)
+
+class vmhd(Atom):
+    "vmhd-atom class"
+
+    def __init__(self, stream, size, type, parent):
+
+        self.with_version = True
+        super().__init__(stream, size, type, parent)
+
+        self.elements['Graphics_mode'] = read_num(stream, 2)
+        self.elements['Opcolor'] = [read_num(stream, 2) for x in range(3)]
+
+class stsd(Atom):
+    "stsd-atom class"
+
+    def __init__(self, stream, size, type, parent):
+
+        self.with_version = True
+        super().__init__(stream, size, type, parent)
+
+        self.elements['Number_of_entries'] = read_num(stream)
+
+        #stream.seek(self.size - 16, os.SEEK_CUR)
+
+        self.parse_children(stream)
+
+class mp4a(Atom):
+    "mp4a sample descriptor atom"
+
+    def __init__(self, stream, size, type, parent):
+
+        super().__init__(stream, size, type, parent)
+
+        self.elements['Reserved'] = read_num(stream, 6)
+        self.elements['Data_reference_Index'] = read_num(stream, 2)
+        self.elements['Version'] = read_num(stream, 2)
+
+        # change parse according to stsd version.
+        if self.elements['Version'] == 0:
+
+            self.elements['Revision_level'] = read_num(stream, 2)
+            self.elements['Vendor'] = read_num(stream)
+            self.elements['Number_of_channels'] = read_num(stream, 2)
+            self.elements['Sample_size'] = read_num(stream, 2)
+            self.elements['Comparison_ID'] = read_num(stream, 2)
+            self.elements['Packet_size'] = read_num(stream, 2)
+            self.elements['Sample_rate'] = read_num(stream)
+
+            self.parse_children(stream)
+
+        else:
+            stream.seek(self.size - 18, os.SEEK_CUR)
+
+class esds(Atom):
+    "esds sample descriptor atom"
+
+    def __init__(self, stream, size, type, parent):
+
+        super().__init__(stream, size, type, parent)
+
+        self.elements['Version'] = read_num(stream)
+        stream.seek(self.size - 12, os.SEEK_CUR)
+
 class atom_with_only_children(Atom,):
+    "atoms that have only children"
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, parent):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, parent)
         self.parse_children(stream)
