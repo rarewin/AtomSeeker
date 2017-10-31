@@ -10,7 +10,7 @@ You can find a specification of QuickTime File Format(QTFF) at <https://develope
 Installing
 ----------
 
-Please try the usual way as the follwing:
+Please try the usual way as the following:
 
     % python setup.py install
 
@@ -34,4 +34,4 @@ License
 -------
 
 This program is under the BSD 2-Clause License.
-Please see LISENCE.txt.
+Please see LICENCE.txt.
