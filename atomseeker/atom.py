@@ -121,7 +121,7 @@ class Atom:
         self.children = _children
 
 
-class FTYP(Atom):
+class ftyp(Atom):
     """ftyp-atom class"""
 
     def __init__(self, stream, size, type):
@@ -139,7 +139,7 @@ class FTYP(Atom):
         self.elements['Compatible_Brands'] = tmp
 
 
-class MOOV(Atom):
+class moov(Atom):
     """moov-atom class"""
 
     def __init__(self, stream, size, type):
@@ -152,7 +152,7 @@ class MOOV(Atom):
         self.parse_children(stream)
 
 
-class MVHD(Atom):
+class mvhd(Atom):
     """mvhd-atom class"""
 
     def __init__(self, stream, size, type):
@@ -180,7 +180,7 @@ class MVHD(Atom):
         self.elements['Next_track_ID'] = read_num(stream)
 
 
-class TKHD(Atom):
+class tkhd(Atom):
     """tkhd-atom class"""
 
     def __init__(self, stream, size, type):
@@ -206,7 +206,7 @@ class TKHD(Atom):
         self.elements['Track_height'] = read_num(stream)
 
 
-class MDHD(Atom):
+class mdhd(Atom):
     """mdhd-atom class"""
 
     def __init__(self, stream, size, type):
@@ -224,7 +224,7 @@ class MDHD(Atom):
         self.elements['Quality'] = read_str(stream, 2)
 
 
-class ELST(Atom):
+class elst(Atom):
     """elst-atom class"""
 
     def __init__(self, stream, size, type):
