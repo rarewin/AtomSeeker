@@ -12,4 +12,5 @@ setup(
         [console_scripts]
         atomseek = atomseeker.cmdline:main
     """,
+    test_suite="tests",
 )
