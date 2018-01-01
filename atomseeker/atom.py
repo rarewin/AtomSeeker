@@ -220,8 +220,9 @@ class mdhd(Atom):
             elements.AtomDate(read_num(stream)))
         self.elements['Time_scale'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
-        self.elements['Language'] = read_str(stream, 2)
-        self.elements['Quality'] = read_str(stream, 2)
+        self.elements['Language'] = elements.AtomLanguageCodeValue(
+            read_num(stream, 2))
+        self.elements['Quality'] = read_num(stream, 2)
 
 
 class elst(Atom):

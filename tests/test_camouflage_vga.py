@@ -4,14 +4,6 @@ import atomseeker
 import datetime
 
 
-def trans_int_to_iso_language_code(n):
-    """transform 16-bit value to ISO Language Code
-    see <https://developer.apple.com/library/content/documentation/QuickTime/QTFF/QTFFChap4/qtff4.html#//apple_ref/doc/uid/TP40000939-CH206-27005> for detail
-    """
-
-    return "%c%c%c" % [chr(((n >> 10) & 0x1f) + 0x60), chr(((n >> 5) & 0x1f) + 0x60), chr((n & 0x1f) + 0x60)]
-
-
 class TestCamoflageVga(unittest.TestCase):
 
     def get_list(self, atom_list, atom_type):
@@ -107,6 +99,5 @@ class TestCamoflageVga(unittest.TestCase):
 
         self.assertEqual(mdhd.elements['Creation_time'].date,
                          datetime.datetime(1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
-        self.assertEqual(
-            trans_int_to_iso_language_code(mdhd.elements['Language']), 'und')
+        self.assertEqual(mdhd.elements['Language'].__str__(), 'und')
         self.assertEqual(mdhd.elements['Quality'], 0)

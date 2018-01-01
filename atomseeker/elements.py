@@ -56,3 +56,140 @@ class AtomMatrix:
         return ("[[%16.16f %16.16f %2.30f] "
                 "[%16.16f %16.16f %2.30f] "
                 "[%16.16f %16.16f %2.30f]]" % self.matrix())
+
+
+class AtomLanguageCodeValue:
+
+    # Macintosh Language Codes
+    MAC_LANGUAGE_CODE = (
+        "English",
+        "French",
+        "German",
+        "Italian",
+        "Dutch",
+        "Swedish",
+        "Spanish",
+        "Danish",
+        "Portuguese",
+        "Norwegian",
+        "Hebrew",
+        "Japanese",
+        "Arabic",
+        "Finnish",
+        "Greek",
+        "Icelandic",
+        "Maltese",
+        "Turkish",
+        "Croatian",
+        "Traditional",
+        "Chinese",
+        "Urdu",
+        "Hindi",
+        "Thai",
+        "Korean",
+        "Lithuanian",
+        "Polish",
+        "Hungarian",
+        "Estonian",
+        "Lettish",
+        "Latvian",
+        "Saami",
+        "Sami",
+        "Faroese",
+        "Farsi",
+        "Russian",
+        "Simplified",
+        "Chinese",
+        "Flemish",
+        "Irish",
+        "Albanian",
+        "Romanian",
+        "Czech",
+        "Slovak",
+        "Slovenian",
+        "Yiddish",
+        "Serbian",
+        "Macedonian",
+        "Bulgarian",
+        "Ukrainian",
+        "Belarusian",
+        "Uzbek",
+        "Kazakh",
+        "Azerbaijani",
+        "AzerbaijanAr",
+        "Armenian",
+        "Georgian",
+        "Moldavian",
+        "Kirghiz",
+        "Tajiki",
+        "Turkmen",
+        "Mongolian",
+        "MongolianCyr",
+        "Pashto",
+        "Kurdish",
+        "Kashmiri",
+        "Sindhi",
+        "Tibetan",
+        "Nepali",
+        "Sanskrit",
+        "Marathi",
+        "Bengali",
+        "Assamese",
+        "Gujarati",
+        "Punjabi",
+        "Oriya",
+        "Malayalam",
+        "Kannada",
+        "Tamil",
+        "Telugu",
+        "Sinhala",
+        "Burmese",
+        "Khmer",
+        "Lao",
+        "Vietnamese",
+        "Indonesian",
+        "Tagalog",
+        "MalayRoman",
+        "MalayArabic",
+        "Amharic",
+        "Galla",
+        "Oromo",
+        "Somali",
+        "Swahili",
+        "Kinyarwanda",
+        "Rundi",
+        "Nyanja",
+        "Malagasy",
+        "Esperanto",
+        "Welsh",
+        "Basque",
+        "Catalan",
+        "Latin",
+        "Quechua",
+        "Guarani",
+        "Aymara",
+        "Tatar",
+        "Uighur",
+        "Dzongkha",
+        "JavaneseRom",
+
+    )
+
+    def __init__(self, value):
+
+        # the value should be less than 0x8000
+        if value > 0x7fff:
+            raise ValueError
+
+        self.value = value
+
+    def __str__(self):
+
+        if self.value < 0x400:
+            return MAC_LANGUAGE_CODE[self.value]
+        elif self.value == 0x7fff:
+            return 'Unspecified'
+        else:
+            return "%c%c%c" % (((self.value >> 10) & 0x1f) + 0x60,
+                               ((self.value >> 5) & 0x1f) + 0x60,
+                               (self.value & 0x1f) + 0x60)
