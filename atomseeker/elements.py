@@ -53,9 +53,9 @@ class AtomMatrix:
                 self.v, self.x, self.y, self.w)
 
     def __str__(self):
-        return ("[[%16.16f %16.16f %2.30f] "
-                "[%16.16f %16.16f %2.30f] "
-                "[%16.16f %16.16f %2.30f]]" % self.matrix())
+        return ("[[%.4f %.4f %.4f] "
+                "[%.4f %.4f %.4f] "
+                "[%.4f %.4f %.4f]]" % self.matrix())
 
 
 class AtomLanguageCodeValue:
