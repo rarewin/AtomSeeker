@@ -1,15 +1,12 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 "Jinja2" = "==2.10"
 MarkupSafe = "==1.0"
-
+pytest = "*"
+atomseeker = {editable = true, path = "."}
 
 [dev-packages]
-

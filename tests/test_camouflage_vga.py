@@ -15,7 +15,8 @@ class TestCamoflageVga(unittest.TestCase):
         """get moov-atom"""
 
         moov_list = self.get_list(self.parsed, 'moov')
-        self.assertEqual(len(moov_list), 1)
+
+        assert len(moov_list) == 1
 
         return moov_list[0]
 
@@ -25,7 +26,8 @@ class TestCamoflageVga(unittest.TestCase):
         moov = self.get_moov()
 
         mvhd_list = self.get_list(moov.children, 'mvhd')
-        self.assertEqual(len(mvhd_list), 1)
+
+        assert len(mvhd_list) == 1
 
         return mvhd_list[0]
 
@@ -35,7 +37,8 @@ class TestCamoflageVga(unittest.TestCase):
         moov = self.get_moov()
 
         trak_list = self.get_list(moov.children, 'trak')
-        self.assertEqual(len(trak_list), 1)
+
+        assert len(trak_list) == 1
 
         return trak_list[0]
 
@@ -45,7 +48,8 @@ class TestCamoflageVga(unittest.TestCase):
         trak = self.get_trak()
 
         mdia_list = self.get_list(trak.children, 'mdia')
-        self.assertEqual(len(mdia_list), 1)
+
+        assert len(mdia_list) == 1
 
         return mdia_list[0]
 
@@ -57,18 +61,22 @@ class TestCamoflageVga(unittest.TestCase):
     def test_ftyp(self):
 
         ftyp_list = self.get_list(self.parsed, 'ftyp')
-        self.assertEqual(len(ftyp_list), 1)
+
+        assert len(ftyp_list) == 1
 
         ftyp = ftyp_list[0]
-        self.assertEqual(ftyp.elements['Major_Brand'], "isom")
-        self.assertEqual(ftyp.elements['Minor_Version'], 512)
-        self.assertIn('isom', ftyp.elements['Compatible_Brands'])
-        self.assertIn('mp41', ftyp.elements['Compatible_Brands'])
+
+        assert ftyp.elements['Major_Brand'] == "isom"
+        assert ftyp.elements['Minor_Version'] == 512
+
+        assert 'isom' in ftyp.elements['Compatible_Brands']
+        assert 'mp41' in ftyp.elements['Compatible_Brands']
 
     def test_mdat(self):
 
         mdat_list = self.get_list(self.parsed, 'mdat')
-        self.assertEqual(len(mdat_list), 1)
+
+        assert len(mdat_list) == 1
 
         mdat = mdat_list[0]
 
@@ -76,28 +84,29 @@ class TestCamoflageVga(unittest.TestCase):
 
         mvhd = self.get_mvhd()
 
-        self.assertEqual(mvhd.elements['Creation_time'].date,
-                         datetime.datetime(1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
+        assert (mvhd.elements['Creation_time'].date ==
+                datetime.datetime(1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
 
-        self.assertEqual(mvhd.elements['Matrix_structure'].a, 1.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].b, 0.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].u, 0.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].c, 0.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].d, 1.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].v, 0.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].x, 0.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].y, 0.0)
-        self.assertEqual(mvhd.elements['Matrix_structure'].w, 1.0)
+        mvhd.elements['Matrix_structure'].a == 1.0
+        mvhd.elements['Matrix_structure'].b == 0.0
+        mvhd.elements['Matrix_structure'].u == 0.0
+        mvhd.elements['Matrix_structure'].c == 0.0
+        mvhd.elements['Matrix_structure'].d == 1.0
+        mvhd.elements['Matrix_structure'].v == 0.0
+        mvhd.elements['Matrix_structure'].x == 0.0
+        mvhd.elements['Matrix_structure'].y == 0.0
+        mvhd.elements['Matrix_structure'].w == 1.0
 
     def test_mdhd(self):
 
         mdia = self.get_mdia()
 
         mdhd_list = self.get_list(mdia.children, 'mdhd')
-        self.assertEqual(len(mdhd_list), 1)
+        assert len(mdhd_list) == 1
+
         mdhd = mdhd_list[0]
 
-        self.assertEqual(mdhd.elements['Creation_time'].date,
-                         datetime.datetime(1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
-        self.assertEqual(mdhd.elements['Language'].__str__(), 'und')
-        self.assertEqual(mdhd.elements['Quality'], 0)
+        assert (mdhd.elements['Creation_time'].date == datetime.datetime(
+            1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
+        assert mdhd.elements['Language'].__str__() == 'und'
+        assert mdhd.elements['Quality'] == 0
