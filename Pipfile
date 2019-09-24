@@ -4,9 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"Jinja2" = "==2.10"
-MarkupSafe = "==1.0"
+"Jinja2" = "*"
+MarkupSafe = "*"
 pytest = "*"
-atomseeker = {editable = true, path = "."}
+atomseeker = {editable = true,path = "."}
+black = "*"
+pip = "*"
 
 [dev-packages]
+flake8 = "*"
+black = "*"
+
+[pipenv]
+allow_prereleases = true

@@ -5,7 +5,6 @@ import datetime
 
 
 class TestCamoflageVga(unittest.TestCase):
-
     def get_list(self, atom_list, atom_type):
         """get list of atoms which type are `atom_type'"""
 
@@ -84,8 +83,8 @@ class TestCamoflageVga(unittest.TestCase):
 
         mvhd = self.get_mvhd()
 
-        assert (mvhd.elements['Creation_time'].date ==
-                datetime.datetime(1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
+        assert (mvhd.elements['Creation_time'].date == datetime.datetime(
+            1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
 
         mvhd.elements['Matrix_structure'].a == 1.0
         mvhd.elements['Matrix_structure'].b == 0.0

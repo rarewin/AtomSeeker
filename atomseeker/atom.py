@@ -90,7 +90,6 @@ def print_atoms(atoms, level=0):
 
 class Atom:
     """basic atom class"""
-
     def __init__(self, stream, size, type):
 
         self.size = size
@@ -123,7 +122,6 @@ class Atom:
 
 class ftyp(Atom):
     """ftyp-atom class"""
-
     def __init__(self, stream, size, type):
 
         super().__init__(stream, size, type)
@@ -141,7 +139,6 @@ class ftyp(Atom):
 
 class moov(Atom):
     """moov-atom class"""
-
     def __init__(self, stream, size, type):
 
         super().__init__(stream, size, type)
@@ -154,7 +151,6 @@ class moov(Atom):
 
 class mvhd(Atom):
     """mvhd-atom class"""
-
     def __init__(self, stream, size, type):
 
         self.with_version = True
@@ -162,15 +158,15 @@ class mvhd(Atom):
         super().__init__(stream, size, type)
 
         self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
-        self.elements['Modification_time'] = (
-            elements.AtomDate(read_num(stream)))
+        self.elements['Modification_time'] = (elements.AtomDate(
+            read_num(stream)))
         self.elements['Time_scale'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
         self.elements['Preferred_rate'] = read_num(stream)
         self.elements['Preferred_volume'] = read_num(stream, 2)
         self.elements['Reserved'] = read_num(stream, 10)
-        self.elements['Matrix_structure'] = (
-            elements.AtomMatrix([read_num(stream) for _ in range(9)]))
+        self.elements['Matrix_structure'] = (elements.AtomMatrix(
+            [read_num(stream) for _ in range(9)]))
         self.elements['Preview_time'] = elements.AtomDate(read_num(stream))
         self.elements['Preview_duration'] = read_num(stream)
         self.elements['Poster_time'] = elements.AtomDate(read_num(stream))
@@ -182,7 +178,6 @@ class mvhd(Atom):
 
 class tkhd(Atom):
     """tkhd-atom class"""
-
     def __init__(self, stream, size, type):
 
         self.with_version = True
@@ -190,8 +185,8 @@ class tkhd(Atom):
         super().__init__(stream, size, type)
 
         self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
-        self.elements['Modification_time'] = (
-            elements.AtomDate(read_num(stream)))
+        self.elements['Modification_time'] = (elements.AtomDate(
+            read_num(stream)))
         self.elements['Track_ID'] = read_num(stream)
         self.elements['Reserved'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
@@ -200,15 +195,14 @@ class tkhd(Atom):
         self.elements['Alternate_group'] = read_num(stream, 2)
         self.elements['Volume'] = read_num(stream, 2)
         self.elements['Reserved3'] = read_num(stream, 2)
-        self.elements['Matrix_structure'] = (
-            elements.AtomMatrix([read_num(stream) for _ in range(9)]))
+        self.elements['Matrix_structure'] = (elements.AtomMatrix(
+            [read_num(stream) for _ in range(9)]))
         self.elements['Track_width'] = read_num(stream)
         self.elements['Track_height'] = read_num(stream)
 
 
 class mdhd(Atom):
     """mdhd-atom class"""
-
     def __init__(self, stream, size, type):
 
         self.with_version = True
@@ -216,8 +210,8 @@ class mdhd(Atom):
         super().__init__(stream, size, type)
 
         self.elements['Creation_time'] = elements.AtomDate(read_num(stream))
-        self.elements['Modification_time'] = (
-            elements.AtomDate(read_num(stream)))
+        self.elements['Modification_time'] = (elements.AtomDate(
+            read_num(stream)))
         self.elements['Time_scale'] = read_num(stream)
         self.elements['Duration'] = read_num(stream)
         self.elements['Language'] = elements.AtomLanguageCodeValue(
@@ -227,21 +221,19 @@ class mdhd(Atom):
 
 class elst(Atom):
     """elst-atom class"""
-
     def __init__(self, stream, size, type):
 
         self.with_version = True
         super().__init__(stream, size, type)
 
         self.elements['Number_of_entries'] = read_num(stream)
-        self.elements['Edit_list_table'] = [
-            [read_num(stream) for _ in range(3)]
-            for _ in range(self.elements['Number_of_entries'])
-        ]
+        self.elements['Edit_list_table'] = [[
+            read_num(stream) for _ in range(3)
+        ] for _ in range(self.elements['Number_of_entries'])]
 
 
-class AtomWithOnlyChildren(Atom, ):
-
+class AtomWithOnlyChildren(
+        Atom, ):
     def __init__(self, stream, size, type):
 
         super().__init__(stream, size, type)
