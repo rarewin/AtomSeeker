@@ -15,13 +15,15 @@ def main():
     parser = argparse.ArgumentParser()
 
     # define options
-    parser.add_argument('file',
-                        action='store',
-                        type=argparse.FileType('rb'),
-                        default=None,
-                        nargs='?',
-                        help='filename to be parsed (stdin will be used if omitted)')
-    parser.add_argument('-H', '--html',
+    parser.add_argument(
+        'file',
+        action='store',
+        type=argparse.FileType('rb'),
+        default=None,
+        nargs='?',
+        help='filename to be parsed (stdin will be used if omitted)')
+    parser.add_argument('-H',
+                        '--html',
                         action='store_true',
                         dest='html',
                         help="output html format")
@@ -35,11 +37,11 @@ def main():
         result = atomseeker.atom.parse_atoms(i_f)
         dirname = os.path.normpath(os.path.dirname(__file__))
         env = Environment(loader=FileSystemLoader(
-            os.path.join(dirname, "templates/"),
-            encoding='utf8'
-        ))
+            os.path.join(dirname, "templates/"), encoding='utf8'))
         tpl = env.get_template("atom_top.tpl.html")
-        html = tpl.render({'result': result, })
+        html = tpl.render({
+            'result': result,
+        })
         sys.stdout.buffer.write(html.encode('utf-8'))
     else:
         atomseeker.atom.print_atoms(atomseeker.atom.parse_atoms(i_f))
