@@ -10,4 +10,4 @@ install:
 
 script:
   - pipenv run pytest
-  - pipenv run black --diff
+  - pipenv run black --check .
