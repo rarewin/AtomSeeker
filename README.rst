@@ -1,6 +1,9 @@
 AtomSeeker
 ==========
 
+.. image:: https://travis-ci.org/rarewin/AtomSeeker.svg?branch=master
+    :target: https://travis-ci.org/rarewin/AtomSeeker
+
 Abstract
 --------
 

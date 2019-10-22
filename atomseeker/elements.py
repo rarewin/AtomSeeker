@@ -10,16 +10,11 @@ class AtomDate:
         since midnight, Jan. 1, 1904.
         """
 
-        self.date = datetime.datetime(1904,
-                                      1,
-                                      1,
-                                      0,
-                                      0,
-                                      tzinfo=datetime.timezone.utc)
+        self.date = datetime.datetime(1904, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
         self.date += datetime.timedelta(seconds=timestamp)
 
     def __str__(self):
-        return self.date.strftime('%Y-%m-%dT%H:%M:%S%z')
+        return self.date.strftime("%Y-%m-%dT%H:%M:%S%z")
 
 
 class AtomMatrix:
@@ -36,28 +31,36 @@ class AtomMatrix:
         u, v and w are divided as 2.30 and the others are divided as 16.16.
         """
 
-        (self.a, self.b, self.u, self.c, self.d, self.v, self.x, self.y,
-         self.w) = matrix_data
+        (
+            self.a,
+            self.b,
+            self.u,
+            self.c,
+            self.d,
+            self.v,
+            self.x,
+            self.y,
+            self.w,
+        ) = matrix_data
 
-        self.a /= 2**16
-        self.b /= 2**16
-        self.c /= 2**16
-        self.d /= 2**16
-        self.x /= 2**16
-        self.y /= 2**16
+        self.a /= 2 ** 16
+        self.b /= 2 ** 16
+        self.c /= 2 ** 16
+        self.d /= 2 ** 16
+        self.x /= 2 ** 16
+        self.y /= 2 ** 16
 
-        self.u /= 2**30
-        self.v /= 2**30
-        self.w /= 2**30
+        self.u /= 2 ** 30
+        self.v /= 2 ** 30
+        self.w /= 2 ** 30
 
     def matrix(self):
-        return (self.a, self.b, self.u, self.c, self.d, self.v, self.x, self.y,
-                self.w)
+        return (self.a, self.b, self.u, self.c, self.d, self.v, self.x, self.y, self.w)
 
     def __str__(self):
-        return ("[[%.4f %.4f %.4f] "
-                "[%.4f %.4f %.4f] "
-                "[%.4f %.4f %.4f]]" % self.matrix())
+        return (
+            "[[%.4f %.4f %.4f] " "[%.4f %.4f %.4f] " "[%.4f %.4f %.4f]]" % self.matrix()
+        )
 
 
 class AtomLanguageCodeValue:
@@ -179,7 +182,7 @@ class AtomLanguageCodeValue:
     def __init__(self, value):
 
         # the value should be less than 0x8000
-        if value > 0x7fff:
+        if value > 0x7FFF:
             raise ValueError
 
         self.value = value
@@ -188,9 +191,11 @@ class AtomLanguageCodeValue:
 
         if self.value < 0x400:
             return self.MAC_LANGUAGE_CODE[self.value]
-        elif self.value == 0x7fff:
-            return 'Unspecified'
+        elif self.value == 0x7FFF:
+            return "Unspecified"
         else:
-            return "%c%c%c" % (((self.value >> 10) & 0x1f) + 0x60,
-                               ((self.value >> 5) & 0x1f) + 0x60,
-                               (self.value & 0x1f) + 0x60)
+            return "%c%c%c" % (
+                ((self.value >> 10) & 0x1F) + 0x60,
+                ((self.value >> 5) & 0x1F) + 0x60,
+                (self.value & 0x1F) + 0x60,
+            )
