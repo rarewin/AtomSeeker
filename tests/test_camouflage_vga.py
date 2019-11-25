@@ -1,5 +1,5 @@
 import unittest
-import atomseeker
+import atomseeker.atom
 
 import datetime
 
@@ -77,7 +77,7 @@ class TestCamoflageVga(unittest.TestCase):
 
         assert len(mdat_list) == 1
 
-        mdat = mdat_list[0]
+        # mdat = mdat_list[0]
 
     def test_mvhd(self):
 

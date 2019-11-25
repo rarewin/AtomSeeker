@@ -54,8 +54,6 @@ def parse_atoms(stream):
 def parse_atom(stream):
     """return Atom from 'stream'"""
 
-    t = stream.tell()
-
     _size = read_num(stream)
     _type = read_str(stream)
 
