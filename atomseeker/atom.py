@@ -6,7 +6,8 @@ from collections import OrderedDict
 
 from atomseeker import elements
 
-ATOMS_WITH_ONLY_CHILDREN = ["trak", "edts", "mdia", "minf", "stbl"]
+ATOMS_WITH_ONLY_CHILDREN = ("trak", "edts", "mdia", "minf", "stbl")
+ATOMS_WITH_VERSION = ("mvhd", "tkhd", "mdhd", "elst")
 
 
 def read_num(stream, num=4):
@@ -76,7 +77,7 @@ def print_atoms(atoms, level=0):
 
     for a in atoms:
 
-        print("%s%s: %08x %08x" % (" " * level, a.type, a.size, a.tell))
+        print("%s%s: %08x %08x" % (" " * level, a.type, a.size, a.offset))
 
         for k, v in a.elements.items():
             print(" %s| '%s' = %s" % (" " * level, k, v))
@@ -89,26 +90,26 @@ def print_atoms(atoms, level=0):
 class Atom:
     """basic atom class"""
 
+    __slots__ = ("size", "type", "offset", "version", "flags", "elements")
+
     def __init__(self, stream, size, type):
 
         self.size = size
         self.type = type
-        self.tell = stream.tell() - 8
+        self.offset = stream.tell() - 8
 
-        try:
-            self.with_version
-        except AttributeError:
-            self.with_version = False
-
-        if self.with_version:
+        if self.type in ATOMS_WITH_VERSION:
             self.version = read_num(stream, 1)
             self.flags = read_num(stream, 3)
+        else:
+            self.version = None
+            self.flags = None
 
         self.elements = OrderedDict()
 
     def parse_children(self, stream):
 
-        cur_pos = self.tell
+        cur_pos = self.offset
 
         _children = []
 
@@ -155,8 +156,6 @@ class mvhd(Atom):
 
     def __init__(self, stream, size, type):
 
-        self.with_version = True
-
         super().__init__(stream, size, type)
 
         self.elements["Creation_time"] = elements.AtomDate(read_num(stream))
@@ -183,8 +182,6 @@ class tkhd(Atom):
 
     def __init__(self, stream, size, type):
 
-        self.with_version = True
-
         super().__init__(stream, size, type)
 
         self.elements["Creation_time"] = elements.AtomDate(read_num(stream))
@@ -209,8 +206,6 @@ class mdhd(Atom):
 
     def __init__(self, stream, size, type):
 
-        self.with_version = True
-
         super().__init__(stream, size, type)
 
         self.elements["Creation_time"] = elements.AtomDate(read_num(stream))
@@ -226,7 +221,6 @@ class elst(Atom):
 
     def __init__(self, stream, size, type):
 
-        self.with_version = True
         super().__init__(stream, size, type)
 
         self.elements["Number_of_entries"] = read_num(stream)
