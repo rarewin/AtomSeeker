@@ -4,6 +4,9 @@ import datetime
 
 
 class AtomDate:
+
+    __slots__ = ("date",)
+
     def __init__(self, timestamp):
         """
         In QuickTime File Format, date time is represented by seconds
@@ -18,6 +21,9 @@ class AtomDate:
 
 
 class AtomMatrix:
+
+    __slots__ = ("a", "b", "c", "d", "u", "v", "w", "x", "y")
+
     def __init__(self, matrix_data):
         """
         In QuickTime File Format, Matrix structure is stored in the
@@ -178,6 +184,8 @@ class AtomLanguageCodeValue:
         "Dzongkha",
         "JavaneseRom",
     )
+
+    __slots__ = ("value",)
 
     def __init__(self, value):
 
