@@ -6,14 +6,12 @@ name = "pypi"
 [packages]
 "Jinja2" = "*"
 MarkupSafe = "*"
-pip = "*"
-"e1839a8" = {editable = true, path = "."}
+atomseeker = {editable = true,path = "."}
 
 [dev-packages]
 flake8 = "*"
-black = "*"
 pytest = "*"
-"e1839a8" = {path = ".", editable = true}
+black = "*"
 
 [pipenv]
 allow_prereleases = true
