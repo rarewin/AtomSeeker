@@ -1,9 +1,8 @@
 AtomSeeker
 ==========
 
-.. image:: https://travis-ci.org/rarewin/AtomSeeker.svg?branch=master
-    :target: https://travis-ci.org/rarewin/AtomSeeker
-
+.. image:: https://github.com/rarewin/AtomSeeker/workflows/Python%20package/badge.svg
+    :target: https://github.com/rarewin/AtomSeeker/actions?query=workflow%3A%22Python+package%22
 Abstract
 --------
 
