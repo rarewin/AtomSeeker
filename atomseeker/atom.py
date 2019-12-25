@@ -55,20 +55,29 @@ def parse_atoms(stream):
 def parse_atom(stream):
     """return Atom from 'stream'"""
 
-    _size = read_num(stream)
-    _type = read_str(stream)
+    offset = stream.tell()
+    size = read_num(stream)
+    type = read_str(stream)
 
     # print("%s: %08x" % (_type, t))
 
+    if size != 1:
+        stream.seek(-8, os.SEEK_CUR)
+    else:
+        size = read_num(stream, 8)  # extended size
+        stream.seek(-16, os.SEEK_CUR)
+
     try:
-        return eval("%s(stream, _size, _type)" % _type)
+        return eval("{}Atom(stream, size, type, offset)".format(type.capitalize()))
     except NameError:
 
-        if _type in ATOMS_WITH_ONLY_CHILDREN:
-            return AtomWithOnlyChildren(stream, _size, _type)
+        if type in ATOMS_WITH_ONLY_CHILDREN:
+            return AtomWithOnlyChildren(stream, size, type, offset)
 
-        a = Atom(stream, _size, _type)
-        stream.seek(_size - 8, os.SEEK_CUR)
+        a = Atom(stream, size, type, offset)
+
+        stream.seek(offset + size, os.SEEK_SET)
+
         return a
 
 
@@ -90,13 +99,25 @@ def print_atoms(atoms, level=0):
 class Atom:
     """basic atom class"""
 
-    __slots__ = ("size", "type", "offset", "version", "flags", "elements")
+    __slots__ = ("size", "esize", "type", "offset", "version", "flags", "elements")
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
         self.size = size
         self.type = type
-        self.offset = stream.tell() - 8
+        self.offset = offset
+
+        stream.seek(offset, os.SEEK_SET)
+        r_size = read_num(stream, 4)
+        r_type = read_str(stream, 4)
+
+        # extended size
+        if r_size == 1:
+            r_size = read_num(stream, 8)
+
+        # assertion
+        if r_size != size or r_type != type:
+            raise ValueError("failed to parse")
 
         if self.type in ATOMS_WITH_VERSION:
             self.version = read_num(stream, 1)
@@ -120,12 +141,12 @@ class Atom:
         self.children = _children
 
 
-class ftyp(Atom):
+class FtypAtom(Atom):
     """ftyp-atom class"""
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, offset)
 
         self.elements["Major_Brand"] = read_str(stream, 4)
         self.elements["Minor_Version"] = read_num(stream, 4)
@@ -138,25 +159,22 @@ class ftyp(Atom):
         self.elements["Compatible_Brands"] = tmp
 
 
-class moov(Atom):
+class MoovAtom(Atom):
     """moov-atom class"""
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
-
-        if self.size == 1:
-            self.elements["ExtendedSize"] = read_num(stream, 8)
+        super().__init__(stream, size, type, offset)
 
         self.parse_children(stream)
 
 
-class mvhd(Atom):
+class MvhdAtom(Atom):
     """mvhd-atom class"""
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, offset)
 
         self.elements["Creation_time"] = elements.AtomDate(read_num(stream))
         self.elements["Modification_time"] = elements.AtomDate(read_num(stream))
@@ -177,12 +195,12 @@ class mvhd(Atom):
         self.elements["Next_track_ID"] = read_num(stream)
 
 
-class tkhd(Atom):
+class TkhdAtom(Atom):
     """tkhd-atom class"""
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, offset)
 
         self.elements["Creation_time"] = elements.AtomDate(read_num(stream))
         self.elements["Modification_time"] = elements.AtomDate(read_num(stream))
@@ -201,12 +219,12 @@ class tkhd(Atom):
         self.elements["Track_height"] = read_num(stream)
 
 
-class mdhd(Atom):
+class MdhdAtom(Atom):
     """mdhd-atom class"""
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, offset)
 
         self.elements["Creation_time"] = elements.AtomDate(read_num(stream))
         self.elements["Modification_time"] = elements.AtomDate(read_num(stream))
@@ -216,12 +234,12 @@ class mdhd(Atom):
         self.elements["Quality"] = read_num(stream, 2)
 
 
-class elst(Atom):
+class ElstAtom(Atom):
     """elst-atom class"""
 
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, offset)
 
         self.elements["Number_of_entries"] = read_num(stream)
         self.elements["Edit_list_table"] = [
@@ -231,7 +249,7 @@ class elst(Atom):
 
 
 class AtomWithOnlyChildren(Atom):
-    def __init__(self, stream, size, type):
+    def __init__(self, stream, size, type, offset):
 
-        super().__init__(stream, size, type)
+        super().__init__(stream, size, type, offset)
         self.parse_children(stream)
